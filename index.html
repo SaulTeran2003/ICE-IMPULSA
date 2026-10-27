@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <!--
   ICE Impulsa 2026: página informativa del evento
-  Se abre en http://148.204.35.200:8080/ICE/ICE-IMPULSA/
+  Versión pública: https://saulteran2003.github.io/ICE-IMPULSA/
+  También en el servidor: http://148.204.35.200:8080/ICE/ICE-IMPULSA/
 
   Es una página de HTML sola: no usa PHP ni base de datos.
   Los datos que faltan confirmar están marcados con  EDITAR  en los comentarios.
@@ -14,7 +15,7 @@
   <title>ICE Impulsa 2026: exhibición de proyectos tecnológicos</title>
   <meta name="description" content="Exhibición de proyectos tecnológicos de estudiantes de Ingeniería en Comunicaciones y Electrónica de la ESIME Zacatenco, IPN.">
   <meta name="theme-color" content="#6B1D45">
-  <link rel="icon" href="../img/SICEICO2.ico" type="image/x-icon">
+  <link rel="icon" href="img/icono.ico" type="image/x-icon">
   <style>
     /* Tipografía Archivo (licencia SIL OFL, ver fonts/OFL-Archivo.txt), incluida en la carpeta
        para que la página cargue igual aunque no haya internet hacia Google Fonts. */
@@ -132,37 +133,126 @@
       font-variation-settings: "wdth" 90;
     }
 
-    /* La señal: una respuesta al impulso que se dibuja al abrir la página */
-    .senal {
-      width: calc(100% + 2.5rem);
-      margin: 1.75rem -1.25rem 0;
-      height: auto;
+    /* El radio: cada área de ICE es una estación que se puede sintonizar */
+    .radio {
+      margin-top: 2rem;
+      padding: 1.1rem 1.1rem 1.25rem;
+      background: var(--guinda-oscuro);
+      border-radius: 1.25rem;
     }
-    .senal path {
-      fill: none;
-      stroke: var(--senal);
-      stroke-width: 2.5;
-      stroke-linejoin: round;
-      stroke-linecap: round;
-      stroke-dasharray: 2600;
-      stroke-dashoffset: 2600;
-      animation: trazar 2.4s cubic-bezier(.6, 0, .25, 1) .3s forwards;
+    .radio-titulo {
+      margin: 0 0 .75rem;
+      font-size: .95rem;
+      color: rgba(255, 255, 255, .75);
     }
-    .senal .eje { stroke: rgba(255, 255, 255, .18); stroke-width: 1; animation: none; stroke-dasharray: 4 6; stroke-dashoffset: 0; }
-    .senal circle {
-      fill: var(--senal);
-      opacity: 0;
-      animation: aparecer .4s ease-out 1.6s forwards;
+    .dial {
+      position: relative;
+      height: 4.5rem;
+      border-radius: .75rem;
+      background: #2C0A1B;
+      overflow: hidden;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
-    .senal text {
-      fill: rgba(255, 255, 255, .75);
-      font-size: 44px;
-      font-family: inherit;
-      opacity: 0;
-      animation: aparecer .4s ease-out 1.8s forwards;
+    .escala {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: .9rem;
+      right: .9rem;
+      background:
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, .55) 0 1px, transparent 1px 20%) top left / 100% 1.15rem no-repeat,
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, .25) 0 1px, transparent 1px 4%) top left / 100% .6rem no-repeat;
+      border-right: 1px solid rgba(255, 255, 255, .55);
+      border-right-width: 1px;
     }
-    @keyframes trazar { to { stroke-dashoffset: 0; } }
-    @keyframes aparecer { to { opacity: 1; } }
+    .escala span {
+      position: absolute;
+      bottom: .45rem;
+      transform: translateX(-50%);
+      font-size: .75rem;
+      color: rgba(255, 255, 255, .55);
+      font-variant-numeric: tabular-nums;
+    }
+    .estacion-marca {
+      position: absolute;
+      top: 1.6rem;
+      width: .5rem;
+      height: .5rem;
+      margin-left: -.25rem;
+      border-radius: 50%;
+      background: rgba(155, 232, 184, .45);
+    }
+    .aguja {
+      position: absolute;
+      top: .3rem;
+      bottom: .3rem;
+      width: 3px;
+      margin-left: -1.5px;
+      border-radius: 2px;
+      background: var(--senal);
+      box-shadow: 0 0 14px rgba(155, 232, 184, .8);
+      transition: left .7s cubic-bezier(.3, 1.3, .5, 1);
+    }
+    .aguja.barrido {
+      transition: none;
+      animation: barrido 2.6s cubic-bezier(.45, 0, .25, 1) .4s both;
+    }
+    @keyframes barrido {
+      0%   { left: .9rem; }
+      55%  { left: calc(100% - .9rem); }
+      100% { left: calc(.9rem + (100% - 1.8rem) * .1); }
+    }
+    .pantalla {
+      min-height: 6.6rem;
+      margin-top: .9rem;
+    }
+    .frecuencia {
+      display: block;
+      font-size: .875rem;
+      color: rgba(255, 255, 255, .65);
+      font-variant-numeric: tabular-nums;
+    }
+    .estacion {
+      display: block;
+      font-size: 1.75rem;
+      line-height: 1.1;
+      font-weight: 800;
+      font-variation-settings: "wdth" 80;
+      color: var(--senal);
+    }
+    .frase { display: block; margin-top: .2rem; color: rgba(255, 255, 255, .88); line-height: 1.35; }
+    .pantalla.cambiando { animation: estatica .35s steps(4) both; }
+    @keyframes estatica {
+      0% { opacity: .2; }
+      50% { opacity: .8; }
+      75% { opacity: .4; }
+      100% { opacity: 1; }
+    }
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-top: 1rem;
+    }
+    .presets button {
+      min-height: 2.5rem;
+      padding: .4rem .95rem;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255, 255, 255, .35);
+      background: transparent;
+      color: #fff;
+      font: inherit;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .presets button:hover { border-color: #fff; }
+    .presets button[aria-pressed="true"] {
+      background: var(--senal);
+      border-color: var(--senal);
+      color: var(--tinta);
+    }
 
     .datos {
       display: grid;
@@ -369,7 +459,6 @@
     @media (min-width: 48rem) {
       .contenedor { padding: 0 2rem; }
       .portada .contenedor { padding-top: 4rem; padding-bottom: 3.5rem; }
-      .senal { width: calc(100% + 4rem); margin-left: -2rem; margin-right: -2rem; }
       .datos { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       section { padding: 5rem 0; }
       .areas { grid-template-columns: 1fr 1fr; column-gap: 3rem; }
@@ -379,17 +468,23 @@
       footer .contenedor { grid-template-columns: 1fr auto; align-items: center; }
     }
 
-    /* En pantallas anchas el impulso sube junto al título */
+    /* En pantallas anchas el radio va a la derecha del título */
     @media (min-width: 64rem) {
-      .portada h1 { font-size: 7.25rem; }
-      .lema { position: relative; z-index: 1; }
-      .senal { position: relative; margin-top: -8.5rem; pointer-events: none; }
-      .senal text { font-size: 18px; }
+      .portada h1 { font-size: 7rem; }
+      .portada-cuerpo {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+        column-gap: 3rem;
+        align-items: end;
+      }
+      .portada-cuerpo .radio { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; }
+      .portada-cuerpo h1, .portada-cuerpo .lema { grid-column: 1; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .senal path, .senal circle, .senal text { animation: none; stroke-dashoffset: 0; opacity: 1; }
+      .aguja, .aguja.barrido { transition: none; animation: none; }
+      .pantalla.cambiando { animation: none; }
       summary::after { transition: none; }
     }
   </style>
@@ -407,15 +502,42 @@
 
   <header class="portada">
     <div class="contenedor">
+      <div class="portada-cuerpo">
       <h1><span>ICE</span><span>Impulsa</span><span class="anio">2026</span></h1>
       <p class="lema">Exhibición de proyectos tecnológicos hechos por estudiantes de Ingeniería en Comunicaciones y Electrónica. Conoce, inspírate y construye tu futuro.</p>
 
-      <svg class="senal" viewBox="0 0 1200 270" role="img" aria-label="Una señal plana que de pronto recibe un impulso y se pone a oscilar">
-        <line class="eje" x1="0" y1="176" x2="1200" y2="176"/>
-        <path d="M0 176.0 L6 176.2 L12 176.7 L18 176.9 L24 176.6 L30 175.7 L36 174.6 L42 173.9 L48 174.1 L54 175.3 L60 177.0 L66 178.5 L72 178.9 L78 178.1 L84 176.3 L90 174.4 L96 173.2 L102 173.3 L108 174.6 L114 176.3 L120 177.6 L126 178.1 L132 177.6 L138 176.6 L144 175.6 L150 175.2 L156 175.4 L162 175.8 L168 176.0 L174 175.8 L180 175.3 L186 175.0 L192 175.2 L198 176.0 L204 177.2 L210 178.1 L216 178.2 L222 177.2 L228 175.5 L234 173.8 L240 173.1 L246 173.6 L252 175.2 L258 177.1 L264 178.5 L270 178.8 L276 177.8 L282 176.2 L288 174.8 L294 174.1 L300 174.4 L306 175.2 L312 176.1 L318 176.6 L324 176.5 L330 176.1 L336 175.9 L342 176.2 L348 176.7 L354 177.2 L360 177.1 L366 176.3 L372 175.0 L378 173.9 L384 173.6 L390 174.4 L396 176.0 L402 177.8 L408 178.9 L414 178.7 L420 177.3 L426 175.4 L432 173.8 L438 173.2 L444 173.9 L450 175.4 L456 176.9 L462 177.7 L468 177.7 L474 176.9 L480 176.1 L486 175.6 L492 175.6 L498 175.9 L504 176.1 L510 175.9 L516 175.4 L522 174.8 L528 174.7 L534 175.4 L540 176.6 L546 177.9 L552 178.5 L558 178.0 L564 176.5 L570 174.6 L576 173.3 L582 173.1 L588 174.2 L594 176.1 L600 177.8 L606 178.7 L612 178.3 L618 177.0 L624 175.5 L630 174.5 L636 174.4 L642 175.0 L648 175.7 L654 176.3 L660 176.3 L666 176.0 L672 175.8 L678 176.0 L684 176.6 L690 177.3 L696 177.5 L702 176.0 L708 176.0 L714 32.4 L720 65.6 L726 111.8 L732 160.8 L738 203.5 L744 233.7 L750 248.5 L756 248.0 L762 235.3 L768 214.6 L774 190.9 L780 169.0 L786 152.3 L792 142.7 L798 140.6 L804 145.0 L810 153.9 L816 165.1 L822 176.1 L828 185.1 L834 190.9 L840 193.1 L846 191.9 L852 188.2 L858 183.1 L864 177.6 L870 172.9 L876 169.6 L882 168.0 L888 168.0 L894 169.4 L900 171.7 L906 174.4 L912 176.8 L918 178.6 L924 179.7 L930 179.9 L936 179.4 L942 178.4 L948 177.2 L954 176.0 L960 175.0 L966 174.3 L972 174.1 L978 174.2 L984 174.7 L990 175.2 L996 175.8 L1002 176.3 L1008 176.7 L1014 176.9 L1020 176.9 L1026 176.7 L1032 176.5 L1038 176.2 L1044 175.9 L1050 175.7 L1056 175.6 L1062 175.6 L1068 175.6 L1074 175.7 L1080 175.9 L1086 176.0 L1092 176.1 L1098 176.2 L1104 176.2 L1110 176.2 L1116 176.1 L1122 176.1 L1128 176.0 L1134 176.0 L1140 175.9 L1146 175.9 L1152 175.9 L1158 175.9 L1164 175.9 L1170 176.0 L1176 176.0 L1182 176.0 L1188 176.0 L1194 176.0 L1200 176.0"/>
-        <circle cx="718" cy="22" r="7"/>
-        <text x="734" y="28">el impulso</text>
-      </svg>
+      <div class="radio" id="radio">
+        <p class="radio-titulo">Sintoniza un área de ICE</p>
+        <div class="dial" id="dial" aria-hidden="true">
+          <div class="escala">
+            <span style="left: 0%">88</span>
+            <span style="left: 20%">92</span>
+            <span style="left: 40%">96</span>
+            <span style="left: 60%">100</span>
+            <span style="left: 80%">104</span>
+            <span style="left: 100%">108</span>
+            <i class="estacion-marca" style="left: 10%"></i>
+            <i class="estacion-marca" style="left: 30%"></i>
+            <i class="estacion-marca" style="left: 50%"></i>
+            <i class="estacion-marca" style="left: 70%"></i>
+            <i class="estacion-marca" style="left: 90%"></i>
+          </div>
+          <span class="aguja" id="aguja" style="left: calc(.9rem + (100% - 1.8rem) * .1)"></span>
+        </div>
+        <p class="pantalla" id="pantalla" aria-live="polite">
+          <span class="frecuencia" id="frecuencia">90.0 MHz</span>
+          <span class="estacion" id="estacion">Comunicaciones</span>
+          <span class="frase" id="frase">Antenas, redes y señales que viajan por el aire.</span>
+        </p>
+        <div class="presets" role="group" aria-label="Áreas de ICE">
+          <button type="button" aria-pressed="true" data-pos="0.1" data-frase="Antenas, redes y señales que viajan por el aire.">Comunicaciones</button>
+          <button type="button" aria-pressed="false" data-pos="0.3" data-frase="Circuitos y prototipos armados por los propios estudiantes.">Electrónica</button>
+          <button type="button" aria-pressed="false" data-pos="0.5" data-frase="Software y sistemas embebidos que resuelven problemas reales.">Computación</button>
+          <button type="button" aria-pressed="false" data-pos="0.7" data-frase="Robots y máquinas que miden, deciden y se controlan solas.">Cibernética</button>
+          <button type="button" aria-pressed="false" data-pos="0.9" data-frase="Sonido, audio y control de ruido.">Acústica</button>
+        </div>
+      </div>
+      </div>
 
       <!-- EDITAR: fecha, horario y lugar de ICE Impulsa 2026 cuando estén confirmados.
            Cambia el texto y quita class="pendiente" para que se vea en negritas. -->
@@ -439,7 +561,7 @@
   <main id="contenido">
     <section id="proyectos">
       <div class="contenedor">
-        <h2>Proyectos reales, hechos aquí</h2>
+        <h2>Proyectos de estudiantes para estudiantes</h2>
         <p class="intro">Estudiantes de ICE presentan los proyectos, prototipos e ideas que desarrollan en la carrera. Recorre la exhibición, pregunta cómo funcionan y conoce las áreas que están transformando la tecnología.</p>
 
         <ul class="areas">
@@ -575,7 +697,7 @@
       <div>
         <p><strong>ICE Impulsa 2026</strong></p>
         <p>Organiza Ingeniería en Comunicaciones y Electrónica, ESIME Zacatenco, Instituto Politécnico Nacional.</p>
-        <p><a href="../">Conoce más sobre la carrera en el portal ICE</a></p>
+        <p><a href="http://148.204.35.200:8080/ICE/">Conoce más sobre la carrera en el portal ICE</a> (abre desde la red de la escuela)</p>
       </div>
       <div>
         <button type="button" class="boton compartir" id="compartir">
@@ -588,6 +710,62 @@
   </footer>
 
   <script>
+    // Radio: cada botón sintoniza un área. Al abrir la página la aguja barre el dial una vez.
+    (function () {
+      var dial = document.getElementById('dial');
+      var aguja = document.getElementById('aguja');
+      var pantalla = document.getElementById('pantalla');
+      var frecuencia = document.getElementById('frecuencia');
+      var estacion = document.getElementById('estacion');
+      var frase = document.getElementById('frase');
+      var botones = Array.prototype.slice.call(document.querySelectorAll('.presets button'));
+
+      function posicionAguja(pos) {
+        return 'calc(.9rem + (100% - 1.8rem) * ' + pos + ')';
+      }
+
+      function sintonizar(boton) {
+        var pos = parseFloat(boton.getAttribute('data-pos'));
+        botones.forEach(function (b) { b.setAttribute('aria-pressed', b === boton ? 'true' : 'false'); });
+        aguja.style.left = posicionAguja(pos);
+        frecuencia.textContent = (88 + pos * 20).toFixed(1) + ' MHz';
+        estacion.textContent = boton.textContent;
+        frase.textContent = boton.getAttribute('data-frase');
+        pantalla.classList.remove('cambiando');
+        void pantalla.offsetWidth;
+        pantalla.classList.add('cambiando');
+      }
+
+      botones.forEach(function (b) {
+        b.addEventListener('click', function () { sintonizar(b); });
+      });
+
+      // Tocar el dial sintoniza la estación más cercana.
+      dial.addEventListener('click', function (e) {
+        var caja = dial.getBoundingClientRect();
+        var margen = parseFloat(getComputedStyle(document.documentElement).fontSize) * .9;
+        var pos = (e.clientX - caja.left - margen) / (caja.width - 2 * margen);
+        var cercano = botones[0];
+        botones.forEach(function (b) {
+          if (Math.abs(parseFloat(b.getAttribute('data-pos')) - pos) < Math.abs(parseFloat(cercano.getAttribute('data-pos')) - pos)) cercano = b;
+        });
+        sintonizar(cercano);
+      });
+
+      var sinMovimiento = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!sinMovimiento) {
+        frecuencia.textContent = '\u00a0';
+        estacion.textContent = 'Buscando estación…';
+        frase.textContent = '\u00a0';
+        botones.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+        aguja.classList.add('barrido');
+        aguja.addEventListener('animationend', function () {
+          aguja.classList.remove('barrido');
+          sintonizar(botones[0]);
+        }, { once: true });
+      }
+    })();
+
     // Compartir: usa el menú del celular; si no existe, copia el enlace.
     document.getElementById('compartir').addEventListener('click', function () {
       var estado = document.getElementById('estadoCompartir');
