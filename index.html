@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<!--
+  ICE Impulsa 2026: página informativa del evento
+  Versión pública: https://saulteran2003.github.io/ICE-IMPULSA/
+  También en el servidor: http://148.204.35.200:8080/ICE/ICE-IMPULSA/
+
+  Es una página de HTML sola: no usa PHP ni base de datos.
+  Los datos que faltan confirmar están marcados con  EDITAR  en los comentarios.
+  Busca "EDITAR" para encontrarlos todos.
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ICE Impulsa 2026: exhibición de proyectos tecnológicos</title>
+  <meta name="description" content="Exhibición de proyectos tecnológicos de estudiantes de Ingeniería en Comunicaciones y Electrónica de la ESIME Zacatenco, IPN.">
+  <meta name="theme-color" content="#6B1D45">
+  <link rel="icon" href="img/icono.ico" type="image/x-icon">
+  <style>
+    /* Tipografía Archivo (licencia SIL OFL, ver fonts/OFL-Archivo.txt), incluida en la carpeta
+       para que la página cargue igual aunque no haya internet hacia Google Fonts. */
+    @font-face {
+      font-family: "Archivo";
+      src: url("fonts/archivo.woff2") format("woff2-variations"), url("fonts/archivo.woff2") format("woff2");
+      font-weight: 100 900;
+      font-stretch: 62% 125%;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --guinda: #6B1D45;
+      --guinda-oscuro: #4A1230;
+      --verde: #1B7A43;
+      --senal: #9BE8B8;
+      --papel: #F7F4F5;
+      --tinta: #24161D;
+      --gris: #66575F;
+      --linea: #E3DADF;
+      --ancho: 68rem;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--papel);
+      color: var(--tinta);
+      font-family: "Archivo", "Segoe UI", Roboto, Arial, sans-serif;
+      font-size: 1.0625rem;
+      line-height: 1.6;
+      font-variation-settings: "wdth" 100;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img { max-width: 100%; display: block; }
+
+    a { color: var(--guinda); }
+
+    :focus-visible {
+      outline: 3px solid var(--verde);
+      outline-offset: 3px;
+    }
+
+    .contenedor {
+      width: 100%;
+      max-width: var(--ancho);
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    .saltar {
+      position: absolute;
+      left: -999px;
+      top: 0;
+      background: var(--tinta);
+      color: #fff;
+      padding: .6rem 1rem;
+      z-index: 10;
+    }
+    .saltar:focus { left: 1rem; }
+
+    /* ---------- Barra institucional ---------- */
+    .institucional {
+      background: #fff;
+      border-bottom: 1px solid var(--linea);
+    }
+    .institucional .contenedor {
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      padding-top: .6rem;
+      padding-bottom: .6rem;
+    }
+    .institucional img { height: 2.6rem; width: auto; }
+    .institucional p {
+      margin: 0 0 0 .25rem;
+      font-size: .875rem;
+      line-height: 1.3;
+      color: var(--gris);
+    }
+    .institucional strong { color: var(--tinta); font-weight: 650; }
+
+    /* ---------- Portada ---------- */
+    .portada {
+      background: var(--guinda);
+      color: #fff;
+      overflow: hidden;
+    }
+    .portada .contenedor {
+      padding-top: 2.75rem;
+      padding-bottom: 2.5rem;
+    }
+    .portada h1 {
+      margin: 0;
+      font-size: clamp(3.1rem, 13vw, 8.5rem);
+      line-height: .86;
+      font-weight: 900;
+      font-variation-settings: "wdth" 125;
+      letter-spacing: -.02em;
+    }
+    .portada h1 span { display: block; }
+    .portada h1 .anio {
+      font-weight: 300;
+    }
+    .lema {
+      margin: 1.4rem 0 0;
+      max-width: 34rem;
+      font-size: clamp(1.15rem, 3.4vw, 1.45rem);
+      line-height: 1.35;
+      font-variation-settings: "wdth" 90;
+    }
+
+    /* La señal: una respuesta al impulso que se dibuja al abrir la página */
+    .senal {
+      width: calc(100% + 2.5rem);
+      margin: 1.75rem -1.25rem 0;
+      height: auto;
+    }
+    .senal path {
+      fill: none;
+      stroke: var(--senal);
+      stroke-width: 2.5;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+      stroke-dasharray: 2600;
+      stroke-dashoffset: 2600;
+      animation: trazar 2.4s cubic-bezier(.6, 0, .25, 1) .3s forwards;
+    }
+    .senal .eje { stroke: rgba(255, 255, 255, .18); stroke-width: 1; animation: none; stroke-dasharray: 4 6; stroke-dashoffset: 0; }
+    .senal circle {
+      fill: var(--senal);
+      opacity: 0;
+      animation: aparecer .4s ease-out 1.6s forwards;
+    }
+    .senal text {
+      fill: rgba(255, 255, 255, .75);
+      font-size: 44px;
+      font-family: inherit;
+      opacity: 0;
+      animation: aparecer .4s ease-out 1.8s forwards;
+    }
+    @keyframes trazar { to { stroke-dashoffset: 0; } }
+    @keyframes aparecer { to { opacity: 1; } }
+
+    .datos {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.1rem 1.5rem;
+      margin: 1.5rem 0 0;
+      padding: 1.25rem 0 0;
+      border-top: 1px solid rgba(255, 255, 255, .25);
+    }
+    .datos div { min-width: 0; }
+    .datos dt {
+      font-size: .875rem;
+      color: rgba(255, 255, 255, .72);
+    }
+    .datos dd {
+      margin: .1rem 0 0;
+      font-size: 1.15rem;
+      font-weight: 650;
+      line-height: 1.3;
+    }
+    .pendiente { font-weight: 400; color: rgba(255, 255, 255, .8); }
+
+    .acciones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      margin-top: 1.75rem;
+    }
+    .boton {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      min-height: 3rem;
+      padding: .7rem 1.3rem;
+      border-radius: 999px;
+      font: inherit;
+      font-weight: 650;
+      text-decoration: none;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    .boton svg { width: 1.2rem; height: 1.2rem; flex: none; }
+    .boton-principal { background: var(--senal); color: var(--tinta); }
+    .boton-principal:hover { background: #fff; }
+    .boton-claro { background: transparent; color: #fff; border-color: rgba(255, 255, 255, .55); }
+    .boton-claro:hover { border-color: #fff; }
+
+    /* ---------- Secciones ---------- */
+    section { padding: 3.5rem 0; }
+    section + section { border-top: 1px solid var(--linea); }
+
+    h2 {
+      margin: 0 0 .75rem;
+      font-size: clamp(1.75rem, 5.5vw, 2.6rem);
+      line-height: 1.08;
+      font-weight: 800;
+      font-variation-settings: "wdth" 112;
+      letter-spacing: -.01em;
+      color: var(--guinda-oscuro);
+    }
+    h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      line-height: 1.25;
+      font-weight: 700;
+    }
+    .intro {
+      max-width: 40rem;
+      margin: 0 0 2rem;
+      color: var(--gris);
+      font-size: 1.125rem;
+    }
+
+    /* Áreas */
+    .areas {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0;
+    }
+    .areas li {
+      display: grid;
+      grid-template-columns: 3rem 1fr;
+      gap: 1rem;
+      align-items: start;
+      padding: 1.1rem 0;
+      border-top: 1px solid var(--linea);
+    }
+    .areas li:last-child { border-bottom: 1px solid var(--linea); }
+    .icono {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      color: var(--verde);
+      border: 1px solid var(--linea);
+    }
+    .icono svg { width: 1.6rem; height: 1.6rem; }
+    .areas p { margin: .2rem 0 0; color: var(--gris); max-width: 36rem; }
+
+    .industria {
+      margin-top: 2.25rem;
+      padding: 1.4rem 1.5rem;
+      background: var(--guinda-oscuro);
+      color: #fff;
+      border-radius: 1.25rem;
+    }
+    .industria h3 { color: var(--senal); }
+    .industria p { margin: .4rem 0 0; color: rgba(255, 255, 255, .85); max-width: 40rem; }
+
+    /* Público */
+    .publico {
+      display: grid;
+      gap: 1.25rem;
+    }
+    .publico article {
+      padding: 1.4rem 1.5rem 1.5rem;
+      background: #fff;
+      border-radius: 1.25rem;
+      border-left: 6px solid var(--verde);
+    }
+    .publico article:nth-child(2) { border-left-color: var(--guinda); }
+    .publico article:nth-child(3) { border-left-color: var(--gris); }
+    .publico p { margin: .5rem 0 0; color: var(--gris); }
+
+    /* Programa */
+    .aviso {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.4rem;
+      border: 2px dashed var(--linea);
+      border-radius: 1.25rem;
+      background: #fff;
+      max-width: 42rem;
+    }
+    .aviso svg { width: 1.6rem; height: 1.6rem; color: var(--guinda); flex: none; margin-top: .15rem; }
+    .aviso p { margin: 0; }
+
+    /* Cómo llegar */
+    .llegar {
+      display: grid;
+      gap: 1.75rem;
+    }
+    .llegar dl { margin: 0; display: grid; gap: 1rem; }
+    .llegar dt { font-weight: 700; }
+    .llegar dd { margin: .15rem 0 0; color: var(--gris); }
+    .boton-guinda { background: var(--guinda); color: #fff; }
+    .boton-guinda:hover { background: var(--guinda-oscuro); }
+
+    /* Preguntas */
+    .preguntas { max-width: 44rem; }
+    details {
+      border-top: 1px solid var(--linea);
+      padding: .25rem 0;
+    }
+    details:last-child { border-bottom: 1px solid var(--linea); }
+    summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: .9rem 0;
+      font-weight: 650;
+      font-size: 1.1rem;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: "+";
+      font-size: 1.6rem;
+      line-height: 1;
+      color: var(--guinda);
+      transition: transform .2s ease;
+    }
+    details[open] summary::after { transform: rotate(45deg); }
+    details p { margin: 0 0 1rem; color: var(--gris); }
+
+    /* Pie */
+    footer {
+      background: var(--tinta);
+      color: rgba(255, 255, 255, .8);
+      padding: 2.5rem 0 3rem;
+      font-size: .95rem;
+    }
+    footer .contenedor { display: grid; gap: 1.5rem; }
+    footer strong { color: #fff; }
+    footer a { color: #fff; }
+    footer p { margin: 0; }
+    .compartir {
+      background: transparent;
+      color: #fff;
+      border-color: rgba(255, 255, 255, .4);
+      justify-self: start;
+    }
+    .compartir:hover { border-color: #fff; }
+    .estado-compartir { min-height: 1.5em; color: var(--senal); }
+
+    /* ---------- Pantallas grandes ---------- */
+    @media (min-width: 48rem) {
+      .contenedor { padding: 0 2rem; }
+      .portada .contenedor { padding-top: 4rem; padding-bottom: 3.5rem; }
+      .senal { width: calc(100% + 4rem); margin-left: -2rem; margin-right: -2rem; }
+      .datos { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      section { padding: 5rem 0; }
+      .areas { grid-template-columns: 1fr 1fr; column-gap: 3rem; }
+      .areas li:nth-last-child(2):nth-child(odd) { border-bottom: 1px solid var(--linea); }
+      .publico { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .llegar { grid-template-columns: 1.2fr 1fr; align-items: start; }
+      footer .contenedor { grid-template-columns: 1fr auto; align-items: center; }
+    }
+
+    /* En pantallas anchas el impulso sube junto al título */
+    @media (min-width: 64rem) {
+      .portada h1 { font-size: 7.25rem; }
+      .lema { position: relative; z-index: 1; }
+      .senal { position: relative; margin-top: -8.5rem; pointer-events: none; }
+      .senal text { font-size: 18px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .senal path, .senal circle, .senal text { animation: none; stroke-dashoffset: 0; opacity: 1; }
+      summary::after { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="saltar" href="#contenido">Ir al contenido</a>
+
+  <div class="institucional">
+    <div class="contenedor">
+      <img src="img/ipn.png" alt="Instituto Politécnico Nacional">
+      <img src="img/esime.png" alt="ESIME Zacatenco">
+      <p><strong>Ingeniería en Comunicaciones y Electrónica</strong><br>ESIME Unidad Zacatenco</p>
+    </div>
+  </div>
+
+  <header class="portada">
+    <div class="contenedor">
+      <h1><span>ICE</span><span>Impulsa</span><span class="anio">2026</span></h1>
+      <p class="lema">Exhibición de proyectos tecnológicos hechos por estudiantes de Ingeniería en Comunicaciones y Electrónica. Conoce, inspírate y construye tu futuro.</p>
+
+      <svg class="senal" viewBox="0 0 1200 270" role="img" aria-label="Una señal plana que de pronto recibe un impulso y se pone a oscilar">
+        <line class="eje" x1="0" y1="176" x2="1200" y2="176"/>
+        <path d="M0 176.0 L6 176.2 L12 176.7 L18 176.9 L24 176.6 L30 175.7 L36 174.6 L42 173.9 L48 174.1 L54 175.3 L60 177.0 L66 178.5 L72 178.9 L78 178.1 L84 176.3 L90 174.4 L96 173.2 L102 173.3 L108 174.6 L114 176.3 L120 177.6 L126 178.1 L132 177.6 L138 176.6 L144 175.6 L150 175.2 L156 175.4 L162 175.8 L168 176.0 L174 175.8 L180 175.3 L186 175.0 L192 175.2 L198 176.0 L204 177.2 L210 178.1 L216 178.2 L222 177.2 L228 175.5 L234 173.8 L240 173.1 L246 173.6 L252 175.2 L258 177.1 L264 178.5 L270 178.8 L276 177.8 L282 176.2 L288 174.8 L294 174.1 L300 174.4 L306 175.2 L312 176.1 L318 176.6 L324 176.5 L330 176.1 L336 175.9 L342 176.2 L348 176.7 L354 177.2 L360 177.1 L366 176.3 L372 175.0 L378 173.9 L384 173.6 L390 174.4 L396 176.0 L402 177.8 L408 178.9 L414 178.7 L420 177.3 L426 175.4 L432 173.8 L438 173.2 L444 173.9 L450 175.4 L456 176.9 L462 177.7 L468 177.7 L474 176.9 L480 176.1 L486 175.6 L492 175.6 L498 175.9 L504 176.1 L510 175.9 L516 175.4 L522 174.8 L528 174.7 L534 175.4 L540 176.6 L546 177.9 L552 178.5 L558 178.0 L564 176.5 L570 174.6 L576 173.3 L582 173.1 L588 174.2 L594 176.1 L600 177.8 L606 178.7 L612 178.3 L618 177.0 L624 175.5 L630 174.5 L636 174.4 L642 175.0 L648 175.7 L654 176.3 L660 176.3 L666 176.0 L672 175.8 L678 176.0 L684 176.6 L690 177.3 L696 177.5 L702 176.0 L708 176.0 L714 32.4 L720 65.6 L726 111.8 L732 160.8 L738 203.5 L744 233.7 L750 248.5 L756 248.0 L762 235.3 L768 214.6 L774 190.9 L780 169.0 L786 152.3 L792 142.7 L798 140.6 L804 145.0 L810 153.9 L816 165.1 L822 176.1 L828 185.1 L834 190.9 L840 193.1 L846 191.9 L852 188.2 L858 183.1 L864 177.6 L870 172.9 L876 169.6 L882 168.0 L888 168.0 L894 169.4 L900 171.7 L906 174.4 L912 176.8 L918 178.6 L924 179.7 L930 179.9 L936 179.4 L942 178.4 L948 177.2 L954 176.0 L960 175.0 L966 174.3 L972 174.1 L978 174.2 L984 174.7 L990 175.2 L996 175.8 L1002 176.3 L1008 176.7 L1014 176.9 L1020 176.9 L1026 176.7 L1032 176.5 L1038 176.2 L1044 175.9 L1050 175.7 L1056 175.6 L1062 175.6 L1068 175.6 L1074 175.7 L1080 175.9 L1086 176.0 L1092 176.1 L1098 176.2 L1104 176.2 L1110 176.2 L1116 176.1 L1122 176.1 L1128 176.0 L1134 176.0 L1140 175.9 L1146 175.9 L1152 175.9 L1158 175.9 L1164 175.9 L1170 176.0 L1176 176.0 L1182 176.0 L1188 176.0 L1194 176.0 L1200 176.0"/>
+        <circle cx="718" cy="22" r="7"/>
+        <text x="734" y="28">el impulso</text>
+      </svg>
+
+      <!-- EDITAR: fecha, horario y lugar de ICE Impulsa 2026 cuando estén confirmados.
+           Cambia el texto y quita class="pendiente" para que se vea en negritas. -->
+      <dl class="datos">
+        <div><dt>Fecha</dt><dd class="pendiente">Por confirmar</dd></div>
+        <div><dt>Horario</dt><dd class="pendiente">Por confirmar</dd></div>
+        <div><dt>Lugar</dt><dd>ESIME Zacatenco</dd></div>
+        <div><dt>Entrada</dt><dd>Gratuita</dd></div>
+      </dl>
+
+      <div class="acciones">
+        <a class="boton boton-principal" href="#proyectos">Ver qué vas a encontrar</a>
+        <a class="boton boton-claro" href="#llegar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+          Cómo llegar
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section id="proyectos">
+      <div class="contenedor">
+        <h2>Proyectos reales, hechos aquí</h2>
+        <p class="intro">Estudiantes de ICE presentan los proyectos, prototipos e ideas que desarrollan en la carrera. Recorre la exhibición, pregunta cómo funcionan y conoce las áreas que están transformando la tecnología.</p>
+
+        <ul class="areas">
+          <li>
+            <span class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 13v8"/><path d="M8.5 21h7"/><circle cx="12" cy="11" r="2"/><path d="M7.8 6.8a6 6 0 0 0 0 8.4M16.2 6.8a6 6 0 0 1 0 8.4"/><path d="M5 4a10 10 0 0 0 0 14M19 4a10 10 0 0 1 0 14"/></svg></span>
+            <div>
+              <h3>Comunicaciones</h3>
+              <p>Antenas, redes y sistemas que llevan información de un lugar a otro, de la radio al internet de las cosas.</p>
+            </div>
+          </li>
+          <li>
+            <span class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/><rect x="9.5" y="9.5" width="5" height="5"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg></span>
+            <div>
+              <h3>Electrónica</h3>
+              <p>Circuitos, sensores y prototipos de hardware diseñados y armados por los propios estudiantes.</p>
+            </div>
+          </li>
+          <li>
+            <span class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4" width="19" height="13" rx="1.5"/><path d="M8 21h8M12 17v4"/><path d="m9 8.5-2.5 2 2.5 2M15 8.5l2.5 2-2.5 2"/></svg></span>
+            <div>
+              <h3>Computación</h3>
+              <p>Software, sistemas embebidos y aplicaciones que resuelven problemas concretos.</p>
+            </div>
+          </li>
+          <li>
+            <span class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21h8"/><path d="M8 21v-5"/><circle cx="8" cy="14" r="2"/><path d="m9.4 12.6 4.8-4.8"/><circle cx="15.5" cy="6.5" r="2"/><path d="M17 8l3 3M20 11l-2 2"/></svg></span>
+            <div>
+              <h3>Cibernética</h3>
+              <p>Control, automatización y robótica: máquinas que miden, deciden y actúan solas.</p>
+            </div>
+          </li>
+          <li>
+            <span class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h2M6 8v8M10 4v16M14 7v10M18 10v4M22 12h0"/></svg></span>
+            <div>
+              <h3>Acústica</h3>
+              <p>Sonido y vibraciones: audio, control de ruido y espacios diseñados para escucharse mejor.</p>
+            </div>
+          </li>
+        </ul>
+
+        <div class="industria">
+          <h3>Rumbo a la industria 4.0</h3>
+          <p>Automatización, conectividad, inteligencia artificial e innovación: los proyectos muestran cómo la ingeniería de ICE se conecta con la forma en que hoy se fabrica, se comunica y se decide.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="para-ti">
+      <div class="contenedor">
+        <h2>Si vienes de…</h2>
+        <p class="intro">ICE Impulsa está abierto a todo el público. Esto es lo que te llevas según en qué etapa estás.</p>
+        <div class="publico">
+          <article>
+            <h3>Bachillerato</h3>
+            <p>Conoce cómo es estudiar Ingeniería en Comunicaciones y Electrónica antes de elegir carrera. Platica con estudiantes y ve lo que construyen desde los primeros semestres.</p>
+          </article>
+          <article>
+            <h3>Licenciatura</h3>
+            <p>Mira lo que hacen otros semestres, conoce las áreas de especialidad y encuentra equipo o ideas para tus propios proyectos.</p>
+          </article>
+          <article>
+            <h3>Posgrado y público en general</h3>
+            <p>Conoce el trabajo de la nueva generación de ingenieros del Politécnico y platica con ellos sobre investigación y colaboración.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="programa">
+      <div class="contenedor">
+        <h2>Programa</h2>
+        <!-- EDITAR: cuando haya programa, reemplaza este aviso por la lista de actividades y horarios. -->
+        <div class="aviso">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+          <p>El programa con los horarios de presentaciones y actividades se publicará en esta página antes del evento. Vuelve a escanear el código QR para consultarlo.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="llegar">
+      <div class="contenedor llegar">
+        <div>
+          <h2>Cómo llegar</h2>
+          <dl>
+            <div>
+              <dt>Dónde</dt>
+              <!-- EDITAR: edificio y planta donde será la exhibición. -->
+              <dd>ESIME Unidad Zacatenco, Unidad Profesional Adolfo López Mateos, Ciudad de México. El edificio de la exhibición se anunciará aquí.</dd>
+            </div>
+            <div>
+              <dt>En metro</dt>
+              <dd>La estación más cercana es Politécnico, de la Línea 5.</dd>
+            </div>
+            <div>
+              <dt>Si ya estás en la escuela</dt>
+              <!-- EDITAR: indicaciones dentro de la escuela (por ejemplo, "Edificio 5, planta baja"). -->
+              <dd>Busca los carteles de ICE Impulsa: te llevan a la exhibición.</dd>
+            </div>
+          </dl>
+        </div>
+        <div>
+          <a class="boton boton-guinda" href="https://www.google.com/maps/search/?api=1&amp;query=ESIME+Zacatenco" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+            Abrir en Google Maps
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="preguntas">
+      <div class="contenedor">
+        <h2>Preguntas frecuentes</h2>
+        <div class="preguntas">
+          <details>
+            <summary>¿Cuánto cuesta entrar?</summary>
+            <p>Nada. La entrada es gratuita.</p>
+          </details>
+          <details>
+            <summary>¿Quién puede ir?</summary>
+            <p>Todo el público: estudiantes de bachillerato, de licenciatura, de posgrado y cualquier persona interesada en la tecnología.</p>
+          </details>
+          <details>
+            <summary>¿Qué es ICE?</summary>
+            <p>Ingeniería en Comunicaciones y Electrónica, una de las carreras de la ESIME Zacatenco del Instituto Politécnico Nacional. Forma ingenieros en comunicaciones, electrónica, computación, cibernética y acústica.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="contenedor">
+      <div>
+        <p><strong>ICE Impulsa 2026</strong></p>
+        <p>Organiza Ingeniería en Comunicaciones y Electrónica, ESIME Zacatenco, Instituto Politécnico Nacional.</p>
+        <p><a href="http://148.204.35.200:8080/ICE/">Conoce más sobre la carrera en el portal ICE</a> (abre desde la red de la escuela)</p>
+      </div>
+      <div>
+        <button type="button" class="boton compartir" id="compartir">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>
+          Compartir esta página
+        </button>
+        <p class="estado-compartir" id="estadoCompartir" role="status"></p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Compartir: usa el menú del celular; si no existe, copia el enlace.
+    document.getElementById('compartir').addEventListener('click', function () {
+      var estado = document.getElementById('estadoCompartir');
+      var datos = { title: 'ICE Impulsa 2026', text: 'Exhibición de proyectos tecnológicos de ICE en la ESIME Zacatenco', url: location.href };
+
+      if (navigator.share) {
+        navigator.share(datos).catch(function () {});
+        return;
+      }
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(location.href).then(function () {
+          estado.textContent = 'Enlace copiado. Pégalo donde quieras compartirlo.';
+        }, function () {
+          estado.textContent = 'Copia esta dirección: ' + location.href;
+        });
+      } else {
+        estado.textContent = 'Copia esta dirección: ' + location.href;
+      }
+    });
+  </script>
+</body>
+</html>
